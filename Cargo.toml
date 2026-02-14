@@ -1,0 +1,42 @@
+[package]
+name = "siprec-server"
+version = "0.1.0"
+edition = "2024"
+description = "SIPREC (RFC 7865/7866) recording server"
+license = "BUSL-1.1"
+
+[lib]
+name = "siprec_server"
+path = "src/lib.rs"
+
+[[bin]]
+name = "siprec-server"
+path = "src/bin/siprec_server.rs"
+
+[dependencies]
+tokio = { version = "1.45", features = ["net", "time", "sync", "rt-multi-thread", "macros"] }
+rsip = "0.4"
+bytes = "1"
+rand = "0.9"
+hound = "3.5"
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter", "json"] }
+thiserror = "2"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+async-trait = "0.1"
+anyhow = "1"
+dashmap = "6"
+uuid = { version = "1", features = ["v4"] }
+jiff = "0.2"
+clap = { version = "4", features = ["derive"] }
+quick-xml = "0.37"
+reqwest = { version = "0.12", features = ["multipart"] }
+
+# AWS S3 storage backend
+aws-config = "1"
+aws-sdk-s3 = "1"
+
+[dev-dependencies]
+tokio-test = "0.4"
+tempfile = "3"

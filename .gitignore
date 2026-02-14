@@ -1,0 +1,50 @@
+# Rust build artifacts
+/target/
+**/*.rs.bk
+
+# Cargo lock for libraries (optional - keep for binaries)
+# Cargo.lock
+
+# IDE and editor files
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Environment and secrets
+.env
+.env.*
+*.pem
+*.key
+
+# Test artifacts
+*.wav
+*.pcap
+/recordings/
+/test_output/
+
+# Debug/profiling
+*.log
+perf.data
+perf.data.old
+flamegraph.svg
+cachegrind.out.*
+callgrind.out.*
+
+# Coverage
+/coverage/
+*.profraw
+*.profdata
+lcov.info
+tarpaulin-report.html
+
+# Documentation build
+/doc/
+
+# CDK
+cdk/node_modules/
+cdk/cdk.out/
+cdk/*.js
+cdk/*.d.ts

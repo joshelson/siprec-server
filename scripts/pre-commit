@@ -1,0 +1,100 @@
+#!/bin/bash
+# Git pre-commit hook for siprec-server
+# Install: make install-hooks
+#
+# DO NOT BYPASS THIS HOOK WITH --no-verify
+# CI will reject commits that don't pass these checks.
+# Fix the issues instead of skipping the hook.
+
+set -e
+
+# Colors
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+NC='\033[0m' # No Color
+
+echo ""
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo "  SIPREC Server Pre-Commit Checks"
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo ""
+
+# Track if any check fails
+FAILED=0
+
+# Format check
+echo -n "  [1/4] Checking formatting... "
+if cargo fmt --all -- --check 2>/dev/null; then
+    echo -e "${GREEN}✓${NC}"
+else
+    echo -e "${RED}✗${NC}"
+    echo ""
+    echo -e "${RED}Formatting check failed.${NC}"
+    echo "Run 'cargo fmt' or 'make fmt' to fix."
+    echo ""
+    FAILED=1
+fi
+
+# Clippy
+if [ $FAILED -eq 0 ]; then
+    echo -n "  [2/4] Running clippy... "
+    if cargo clippy --all-targets --all-features -- -D warnings 2>/dev/null; then
+        echo -e "${GREEN}✓${NC}"
+    else
+        echo -e "${RED}✗${NC}"
+        echo ""
+        echo -e "${RED}Clippy found warnings/errors.${NC}"
+        echo "Run 'cargo clippy' to see details."
+        echo ""
+        FAILED=1
+    fi
+fi
+
+# Tests
+if [ $FAILED -eq 0 ]; then
+    echo -n "  [3/4] Running tests... "
+    if cargo test --lib --bins 2>/dev/null; then
+        echo -e "${GREEN}✓${NC}"
+    else
+        echo -e "${RED}✗${NC}"
+        echo ""
+        echo -e "${RED}Tests failed.${NC}"
+        echo "Run 'cargo test' to see details."
+        echo ""
+        FAILED=1
+    fi
+fi
+
+# Documentation (with same flags as CI)
+if [ $FAILED -eq 0 ]; then
+    echo -n "  [4/4] Checking documentation... "
+    if RUSTDOCFLAGS="-Dwarnings" cargo doc --no-deps 2>/dev/null; then
+        echo -e "${GREEN}✓${NC}"
+    else
+        echo -e "${RED}✗${NC}"
+        echo ""
+        echo -e "${RED}Documentation build failed.${NC}"
+        echo "Run 'RUSTDOCFLAGS=\"-Dwarnings\" cargo doc --no-deps' to see details."
+        echo ""
+        FAILED=1
+    fi
+fi
+
+echo ""
+
+if [ $FAILED -eq 1 ]; then
+    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    echo -e "  ${RED}✗ Pre-commit checks FAILED${NC}"
+    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    echo ""
+    echo -e "${YELLOW}Please fix the issues above before committing.${NC}"
+    echo -e "${YELLOW}Using --no-verify is NOT allowed - CI will reject the PR.${NC}"
+    echo ""
+    exit 1
+fi
+
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo -e "  ${GREEN}✓ All pre-commit checks passed!${NC}"
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo ""
