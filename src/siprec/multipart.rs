@@ -176,10 +176,9 @@ fn parse_part(section: &str) -> Option<BodyPart> {
     // Try both \r\n\r\n and \n\n
     let (headers_str, body) = if let Some(pos) = section.find("\r\n\r\n") {
         (&section[..pos], section[pos + 4..].trim().to_string())
-    } else if let Some(pos) = section.find("\n\n") {
-        (&section[..pos], section[pos + 2..].trim().to_string())
     } else {
-        return None;
+        let pos = section.find("\n\n")?;
+        (&section[..pos], section[pos + 2..].trim().to_string())
     };
 
     // Extract Content-Type from headers (case-insensitive per RFC 2045)
