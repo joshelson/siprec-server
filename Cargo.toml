@@ -17,8 +17,6 @@ path = "src/bin/siprec_server.rs"
 tokio = { version = "1.45", features = ["net", "time", "sync", "rt-multi-thread", "macros"] }
 rsip = "0.4"
 bytes = "1"
-rand = "0.9"
-hound = "3.5"
 tracing = "0.1"
 tracing-subscriber = { version = "0.3", features = ["env-filter", "json"] }
 thiserror = "2"
